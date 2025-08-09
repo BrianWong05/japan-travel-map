@@ -1,0 +1,68 @@
+{
+  "navigation": {
+    "home": "Home",
+    "regions": "Regions",
+    "search": "Search attractions...",
+    "filters": "Filters",
+    "favorites": "Favorites",
+    "language": "Language"
+  },
+  "map": {
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetView": "Reset view",
+    "showFavorites": "Show favorites",
+    "openInGoogleMaps": "Open in Google Maps"
+  },
+  "filters": {
+    "categories": "Categories",
+    "tags": "Tags",
+    "clear": "Clear filters",
+    "apply": "Apply"
+  },
+  "categories": {
+    "nature": "Nature",
+    "history": "History",
+    "shopping": "Shopping",
+    "food": "Food",
+    "festivals": "Festivals",
+    "culture": "Culture",
+    "temples": "Temples"
+  },
+  "regions": {
+    "hokkaido": "Hokkaido",
+    "tohoku": "Tohoku",
+    "kanto": "Kanto",
+    "chubu": "Chubu",
+    "kinki": "Kinki",
+    "chugoku": "Chugoku",
+    "shikoku": "Shikoku",
+    "kyushu": "Kyushu",
+    "okinawa": "Okinawa"
+  },
+  "attraction": {
+    "details": "Details",
+    "gallery": "Gallery",
+    "location": "Location",
+    "category": "Category",
+    "tags": "Tags",
+    "related": "Related attractions",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "share": "Share",
+    "close": "Close"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "noResults": "No results found",
+    "showMore": "Show more",
+    "showLess": "Show less"
+  },
+  "languages": {
+    "en": "English",
+    "ja": "日本語",
+    "zh-TW": "繁體中文"
+  }
+}

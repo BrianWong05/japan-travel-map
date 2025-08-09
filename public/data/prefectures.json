@@ -1,0 +1,32 @@
+[
+  {
+    "id": "tokyo",
+    "code": "13",
+    "regionId": "kanto",
+    "slug": "tokyo",
+    "name_en": "Tokyo",
+    "name_ja": "東京都",
+    "name_zh": "東京都",
+    "bbox": [138.9, 35.5, 139.9, 35.9]
+  },
+  {
+    "id": "osaka",
+    "code": "27",
+    "regionId": "kinki",
+    "slug": "osaka",
+    "name_en": "Osaka",
+    "name_ja": "大阪府",
+    "name_zh": "大阪府",
+    "bbox": [135.1, 34.3, 135.8, 34.8]
+  },
+  {
+    "id": "kyoto",
+    "code": "26",
+    "regionId": "kinki",
+    "slug": "kyoto",
+    "name_en": "Kyoto",
+    "name_ja": "京都府",
+    "name_zh": "京都府",
+    "bbox": [135.0, 34.7, 136.0, 35.8]
+  }
+]

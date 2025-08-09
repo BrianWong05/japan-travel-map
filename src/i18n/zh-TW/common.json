@@ -1,0 +1,68 @@
+{
+  "navigation": {
+    "home": "首頁",
+    "regions": "地區",
+    "search": "搜尋景點...",
+    "filters": "篩選",
+    "favorites": "我的最愛",
+    "language": "語言"
+  },
+  "map": {
+    "zoomIn": "放大",
+    "zoomOut": "縮小",
+    "resetView": "重設檢視",
+    "showFavorites": "顯示我的最愛",
+    "openInGoogleMaps": "在Google地圖中開啟"
+  },
+  "filters": {
+    "categories": "類別",
+    "tags": "標籤",
+    "clear": "清除篩選",
+    "apply": "套用"
+  },
+  "categories": {
+    "nature": "自然",
+    "history": "歷史",
+    "shopping": "購物",
+    "food": "美食",
+    "festivals": "節慶",
+    "culture": "文化",
+    "temples": "寺廟"
+  },
+  "regions": {
+    "hokkaido": "北海道",
+    "tohoku": "東北",
+    "kanto": "關東",
+    "chubu": "中部",
+    "kinki": "近畿",
+    "chugoku": "中國",
+    "shikoku": "四國",
+    "kyushu": "九州",
+    "okinawa": "沖繩"
+  },
+  "attraction": {
+    "details": "詳情",
+    "gallery": "圖庫",
+    "location": "位置",
+    "category": "類別",
+    "tags": "標籤",
+    "related": "相關景點",
+    "addToFavorites": "加入我的最愛",
+    "removeFromFavorites": "從我的最愛移除",
+    "share": "分享",
+    "close": "關閉"
+  },
+  "common": {
+    "loading": "載入中...",
+    "error": "發生錯誤",
+    "retry": "重試",
+    "noResults": "找不到結果",
+    "showMore": "顯示更多",
+    "showLess": "顯示較少"
+  },
+  "languages": {
+    "en": "English",
+    "ja": "日本語",
+    "zh-TW": "繁體中文"
+  }
+}

@@ -1,0 +1,83 @@
+[
+  {
+    "id": "hokkaido",
+    "code": "01",
+    "slug": "hokkaido",
+    "name_en": "Hokkaido",
+    "name_ja": "北海道",
+    "name_zh": "北海道",
+    "bbox": [139.3, 41.3, 145.8, 45.5]
+  },
+  {
+    "id": "tohoku",
+    "code": "02",
+    "slug": "tohoku",
+    "name_en": "Tohoku",
+    "name_ja": "東北",
+    "name_zh": "東北",
+    "bbox": [139.0, 36.9, 142.0, 41.5]
+  },
+  {
+    "id": "kanto",
+    "code": "03",
+    "slug": "kanto",
+    "name_en": "Kanto",
+    "name_ja": "関東",
+    "name_zh": "關東",
+    "bbox": [138.9, 35.1, 140.9, 37.0]
+  },
+  {
+    "id": "chubu",
+    "code": "04",
+    "slug": "chubu",
+    "name_en": "Chubu",
+    "name_ja": "中部",
+    "name_zh": "中部",
+    "bbox": [136.0, 34.5, 139.9, 38.5]
+  },
+  {
+    "id": "kinki",
+    "code": "05",
+    "slug": "kinki",
+    "name_en": "Kinki",
+    "name_ja": "近畿",
+    "name_zh": "近畿",
+    "bbox": [134.0, 33.4, 136.9, 35.8]
+  },
+  {
+    "id": "chugoku",
+    "code": "06",
+    "slug": "chugoku",
+    "name_en": "Chugoku",
+    "name_ja": "中国",
+    "name_zh": "中國",
+    "bbox": [130.8, 34.0, 134.7, 35.7]
+  },
+  {
+    "id": "shikoku",
+    "code": "07",
+    "slug": "shikoku",
+    "name_en": "Shikoku",
+    "name_ja": "四国",
+    "name_zh": "四國",
+    "bbox": [132.5, 32.7, 134.8, 34.4]
+  },
+  {
+    "id": "kyushu",
+    "code": "08",
+    "slug": "kyushu",
+    "name_en": "Kyushu",
+    "name_ja": "九州",
+    "name_zh": "九州",
+    "bbox": [129.7, 31.0, 131.9, 34.0]
+  },
+  {
+    "id": "okinawa",
+    "code": "09",
+    "slug": "okinawa",
+    "name_en": "Okinawa",
+    "name_ja": "沖縄",
+    "name_zh": "沖繩",
+    "bbox": [122.9, 24.0, 131.3, 27.9]
+  }
+]

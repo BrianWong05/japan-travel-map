@@ -1,0 +1,68 @@
+{
+  "navigation": {
+    "home": "ホーム",
+    "regions": "地域",
+    "search": "観光地を検索...",
+    "filters": "フィルター",
+    "favorites": "お気に入り",
+    "language": "言語"
+  },
+  "map": {
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "resetView": "表示をリセット",
+    "showFavorites": "お気に入りを表示",
+    "openInGoogleMaps": "Googleマップで開く"
+  },
+  "filters": {
+    "categories": "カテゴリー",
+    "tags": "タグ",
+    "clear": "フィルターをクリア",
+    "apply": "適用"
+  },
+  "categories": {
+    "nature": "自然",
+    "history": "歴史",
+    "shopping": "ショッピング",
+    "food": "グルメ",
+    "festivals": "祭り",
+    "culture": "文化",
+    "temples": "寺社"
+  },
+  "regions": {
+    "hokkaido": "北海道",
+    "tohoku": "東北",
+    "kanto": "関東",
+    "chubu": "中部",
+    "kinki": "近畿",
+    "chugoku": "中国",
+    "shikoku": "四国",
+    "kyushu": "九州",
+    "okinawa": "沖縄"
+  },
+  "attraction": {
+    "details": "詳細",
+    "gallery": "ギャラリー",
+    "location": "場所",
+    "category": "カテゴリー",
+    "tags": "タグ",
+    "related": "関連する観光地",
+    "addToFavorites": "お気に入りに追加",
+    "removeFromFavorites": "お気に入りから削除",
+    "share": "共有",
+    "close": "閉じる"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "retry": "再試行",
+    "noResults": "結果が見つかりません",
+    "showMore": "もっと見る",
+    "showLess": "閉じる"
+  },
+  "languages": {
+    "en": "English",
+    "ja": "日本語",
+    "zh-TW": "繁體中文"
+  }
+}

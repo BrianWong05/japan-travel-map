@@ -1,0 +1,32 @@
+[
+  {
+    "id": "shibuya",
+    "prefectureId": "tokyo",
+    "slug": "shibuya",
+    "name_en": "Shibuya",
+    "name_ja": "渋谷区",
+    "name_zh": "澀谷區",
+    "type": "ward",
+    "bbox": [139.68, 35.64, 139.72, 35.68]
+  },
+  {
+    "id": "shinjuku",
+    "prefectureId": "tokyo",
+    "slug": "shinjuku",
+    "name_en": "Shinjuku",
+    "name_ja": "新宿区",
+    "name_zh": "新宿區",
+    "type": "ward",
+    "bbox": [139.68, 35.68, 139.72, 35.72]
+  },
+  {
+    "id": "chiyoda",
+    "prefectureId": "tokyo",
+    "slug": "chiyoda",
+    "name_en": "Chiyoda",
+    "name_ja": "千代田区",
+    "name_zh": "千代田區",
+    "type": "ward",
+    "bbox": [139.74, 35.67, 139.78, 35.70]
+  }
+]

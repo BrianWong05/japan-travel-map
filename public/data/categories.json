@@ -1,0 +1,58 @@
+[
+  {
+    "id": "nature",
+    "name_en": "Nature",
+    "name_ja": "自然",
+    "name_zh": "自然",
+    "color": "#22c55e",
+    "icon": "mountain"
+  },
+  {
+    "id": "history",
+    "name_en": "History",
+    "name_ja": "歴史",
+    "name_zh": "歷史",
+    "color": "#8b5cf6",
+    "icon": "castle"
+  },
+  {
+    "id": "shopping",
+    "name_en": "Shopping",
+    "name_ja": "ショッピング",
+    "name_zh": "購物",
+    "color": "#f59e0b",
+    "icon": "shopping-bag"
+  },
+  {
+    "id": "food",
+    "name_en": "Food",
+    "name_ja": "グルメ",
+    "name_zh": "美食",
+    "color": "#ef4444",
+    "icon": "utensils"
+  },
+  {
+    "id": "festivals",
+    "name_en": "Festivals",
+    "name_ja": "祭り",
+    "name_zh": "節慶",
+    "color": "#ec4899",
+    "icon": "sparkles"
+  },
+  {
+    "id": "culture",
+    "name_en": "Culture",
+    "name_ja": "文化",
+    "name_zh": "文化",
+    "color": "#06b6d4",
+    "icon": "palette"
+  },
+  {
+    "id": "temples",
+    "name_en": "Temples",
+    "name_ja": "寺社",
+    "name_zh": "寺廟",
+    "color": "#dc2626",
+    "icon": "church"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "shrine",
+    "name_en": "Shrine",
+    "name_ja": "神社",
+    "name_zh": "神社"
+  },
+  {
+    "id": "park",
+    "name_en": "Park",
+    "name_ja": "公園",
+    "name_zh": "公園"
+  },
+  {
+    "id": "museum",
+    "name_en": "Museum",
+    "name_ja": "博物館",
+    "name_zh": "博物館"
+  },
+  {
+    "id": "garden",
+    "name_en": "Garden",
+    "name_ja": "庭園",
+    "name_zh": "庭園"
+  },
+  {
+    "id": "castle",
+    "name_en": "Castle",
+    "name_ja": "城",
+    "name_zh": "城堡"
+  },
+  {
+    "id": "temple",
+    "name_en": "Temple",
+    "name_ja": "寺",
+    "name_zh": "寺廟"
+  },
+  {
+    "id": "market",
+    "name_en": "Market",
+    "name_ja": "市場",
+    "name_zh": "市場"
+  },
+  {
+    "id": "hot-spring",
+    "name_en": "Hot Spring",
+    "name_ja": "温泉",
+    "name_zh": "溫泉"
+  },
+  {
+    "id": "mountain",
+    "name_en": "Mountain",
+    "name_ja": "山",
+    "name_zh": "山"
+  },
+  {
+    "id": "beach",
+    "name_en": "Beach",
+    "name_ja": "海岸",
+    "name_zh": "海灘"
+  }
+]
