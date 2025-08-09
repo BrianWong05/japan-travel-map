@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/store'
 
 export default function MapShell() {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maplibregl.Map | null>(null)
+  const { t } = useTranslation()
   const { mapViewState, setMapViewState } = useAppStore()
   const [currentZoom, setCurrentZoom] = useState(mapViewState.zoom)
+  const [hoveredPrefecture, setHoveredPrefecture] = useState<{name: string, x: number, y: number} | null>(null)
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return // Initialize map only once
@@ -248,6 +251,7 @@ export default function MapShell() {
           if (map.current) {
             map.current.getCanvas().style.cursor = ''
             map.current.setFilter('japan-prefectures-hover', ['==', 'CODE', ''])
+            setHoveredPrefecture(null)
           }
         })
 
@@ -255,6 +259,21 @@ export default function MapShell() {
           if (map.current && e.features && e.features.length > 0 && map.current.getZoom() < 10) {
             const feature = e.features[0]
             map.current.setFilter('japan-prefectures-hover', ['==', 'CODE', feature.properties?.CODE])
+            
+            // Get prefecture name using i18n translations
+            const prefectureCode = feature.properties?.CODE
+            const prefectureName = prefectureCode ? t(`prefectures.${prefectureCode}`) : ''
+            
+            // Set tooltip position and content
+            if (prefectureName && e.point) {
+              setHoveredPrefecture({
+                name: prefectureName,
+                x: e.point.x,
+                y: e.point.y
+              })
+            }
+          } else {
+            setHoveredPrefecture(null)
           }
         })
 
@@ -337,6 +356,19 @@ export default function MapShell() {
           Zoom: {currentZoom.toFixed(1)}
         </div>
       </div>
+      {/* Prefecture Hover Tooltip */}
+      {hoveredPrefecture && (
+        <div 
+          className="absolute bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg pointer-events-none z-10 text-sm font-medium"
+          style={{
+            left: hoveredPrefecture.x + 10,
+            top: hoveredPrefecture.y - 10,
+            transform: 'translateY(-100%)'
+          }}
+        >
+          {hoveredPrefecture.name}
+        </div>
+      )}
     </>
   )
 }
