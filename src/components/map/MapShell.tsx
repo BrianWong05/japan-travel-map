@@ -114,8 +114,9 @@ export default function MapShell() {
               ['linear'],
               ['zoom'],
               4, 0.9,   // high opacity at low zoom
-              8, 0.6,   // medium opacity
-              10, 0,    // completely transparent at zoom 10
+              7, 0.6,   // medium opacity
+              9, 0,     // completely transparent at zoom 9
+              10, 0,    // stay transparent
               12, 0,    // stay transparent
               14, 0,    // stay transparent
               16, 0     // stay transparent at high zoom
@@ -150,8 +151,9 @@ export default function MapShell() {
               ['linear'],
               ['zoom'],
               4, 0.9,   // high opacity at low zoom
-              8, 0.6,   // medium opacity
-              10, 0,    // completely transparent at zoom 10
+              7, 0.6,   // medium opacity
+              9, 0,     // completely transparent at zoom 9
+              10, 0,    // stay transparent
               12, 0,    // stay transparent
               14, 0,    // stay transparent
               16, 0     // stay transparent at high zoom
@@ -229,8 +231,9 @@ export default function MapShell() {
               ['linear'],
               ['zoom'],
               4, 0.4,   // hover opacity at low zoom
-              8, 0.2,   // medium hover opacity
-              10, 0,    // no hover effect at zoom 10
+              7, 0.2,   // medium hover opacity
+              9, 0,     // no hover effect at zoom 9
+              10, 0,    // stay transparent
               12, 0,    // stay transparent
               14, 0,    // stay transparent
               16, 0     // stay transparent at high zoom
@@ -242,7 +245,7 @@ export default function MapShell() {
 
         // Add click and hover interactions (ZOOM DEPENDENT)
         map.current.on('mouseenter', 'japan-prefectures-fill', () => {
-          if (map.current && map.current.getZoom() < 10) {
+          if (map.current && map.current.getZoom() < 9) {
             map.current.getCanvas().style.cursor = 'pointer'
           }
         })
@@ -256,7 +259,7 @@ export default function MapShell() {
         })
 
         map.current.on('mousemove', 'japan-prefectures-fill', (e) => {
-          if (map.current && e.features && e.features.length > 0 && map.current.getZoom() < 10) {
+          if (map.current && e.features && e.features.length > 0 && map.current.getZoom() < 9) {
             const feature = e.features[0]
             map.current.setFilter('japan-prefectures-hover', ['==', 'CODE', feature.properties?.CODE])
             
@@ -278,10 +281,50 @@ export default function MapShell() {
         })
 
         map.current.on('click', 'japan-prefectures-fill', (e) => {
-          if (e.features && e.features.length > 0 && map.current && map.current.getZoom() < 10) {
+          if (e.features && e.features.length > 0 && map.current && map.current.getZoom() < 9) {
             const feature = e.features[0]
-            console.log('Clicked prefecture:', feature.properties?.NAME, '(' + feature.properties?.NAME_JP + ')')
-            // TODO: Navigate to prefecture page or show details
+            const prefectureCode = feature.properties?.CODE
+            const prefectureName = prefectureCode ? t(`prefectures.${prefectureCode}`) : ''
+            
+            console.log('Clicked prefecture:', prefectureName, `(${feature.properties?.NAME})`)
+            
+            // Calculate the bounds of the clicked prefecture
+            if (feature.geometry) {
+              try {
+                // Get the bounds of the feature geometry
+                const bounds = new maplibregl.LngLatBounds()
+                
+                const addCoordinatesToBounds = (coords: any) => {
+                  if (Array.isArray(coords[0])) {
+                    coords.forEach((coord: any) => addCoordinatesToBounds(coord))
+                  } else {
+                    bounds.extend([coords[0], coords[1]])
+                  }
+                }
+                
+                if (feature.geometry.type === 'MultiPolygon') {
+                  feature.geometry.coordinates.forEach((polygon: any) => {
+                    polygon.forEach((ring: any) => {
+                      ring.forEach((coord: any) => bounds.extend([coord[0], coord[1]]))
+                    })
+                  })
+                } else if (feature.geometry.type === 'Polygon') {
+                  feature.geometry.coordinates.forEach((ring: any) => {
+                    ring.forEach((coord: any) => bounds.extend([coord[0], coord[1]]))
+                  })
+                }
+                
+                // Fit the map to the prefecture bounds with padding
+                map.current.fitBounds(bounds, {
+                  padding: 50,
+                  duration: 1000,
+                  maxZoom: 9
+                })
+                
+              } catch (error) {
+                console.error('Error calculating prefecture bounds:', error)
+              }
+            }
           }
         })
 
