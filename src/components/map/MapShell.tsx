@@ -3,6 +3,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "@/store";
+import type { Region } from '@/types'
 
 export default function MapShell() {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -67,8 +68,8 @@ export default function MapShell() {
       maxZoom: 18,
       minZoom: 4,
       maxBounds: [
-        [120, 20], // Southwest coordinates
-        [150, 50], // Northeast coordinates
+        [115, 15], // Southwest coordinates (expanded)
+        [155, 55], // Northeast coordinates (expanded)
       ],
     });
 
@@ -378,14 +379,51 @@ export default function MapShell() {
       }
     });
 
+    // Listen for region zoom events
+    const handleRegionZoom = (event: CustomEvent) => {
+      if (map.current && event.detail?.region) {
+        const region = event.detail.region as Region
+        
+        // Calculate center and zoom from bbox
+        const [minLng, minLat, maxLng, maxLat] = region.bbox
+        const centerLng = (minLng + maxLng) / 2
+        const centerLat = (minLat + maxLat) / 2
+        
+        // Calculate appropriate zoom level based on bbox size
+        const lngDiff = maxLng - minLng
+        const latDiff = maxLat - minLat
+        const maxDiff = Math.max(lngDiff, latDiff)
+        
+        // Estimate zoom level
+        let zoom = 7
+        if (maxDiff < 2) zoom = 8
+        if (maxDiff < 1.5) zoom = 9
+        if (maxDiff < 1) zoom = 10
+        if (maxDiff > 4) zoom = 6
+        if (maxDiff > 6) zoom = 5
+        
+        // Use fitBounds for more accurate framing
+        const bounds = new maplibregl.LngLatBounds([minLng, minLat], [maxLng, maxLat])
+        map.current.fitBounds(bounds, {
+          padding: 50,
+          duration: 1500,
+          maxZoom: zoom
+        })
+      }
+    }
+
+    // Add event listener for region zoom
+    window.addEventListener('zoomToRegion', handleRegionZoom as EventListener)
+
     // Cleanup function
     return () => {
+      window.removeEventListener('zoomToRegion', handleRegionZoom as EventListener)
       if (map.current) {
-        map.current.remove();
-        map.current = null;
+        map.current.remove()
+        map.current = null
       }
-    };
-  }, []);
+    }
+  }, [])
 
   // Update map view when store state changes (e.g., from external navigation)
   useEffect(() => {

@@ -4,10 +4,21 @@ import { Link } from 'react-router-dom'
 import { dataLoaders } from '@/lib/data'
 import { i18nField } from '@/lib/i18n'
 import { useAppStore } from '@/store'
+import type { Region } from '@/types'
 
 export default function HomePage() {
   const { t } = useTranslation()
-  const currentLanguage = useAppStore((state) => state.currentLanguage)
+  const { currentLanguage } = useAppStore()
+
+  const handleRegionClick = (region: Region, e: React.MouseEvent) => {
+    e.preventDefault()
+    
+    // Dispatch a custom event that the map component can listen to
+    const regionZoomEvent = new CustomEvent('zoomToRegion', {
+      detail: { region }
+    })
+    window.dispatchEvent(regionZoomEvent)
+  }
 
   const { data: regions, isLoading, error } = useQuery({
     queryKey: ['regions'],
@@ -38,6 +49,7 @@ export default function HomePage() {
           <Link
             key={region.id}
             to={`/region/${region.slug}`}
+            onClick={(e) => handleRegionClick(region, e)}
             className="block p-3 rounded-md hover:bg-gray-50 border border-gray-200 transition-colors"
           >
             <div className="font-medium">
