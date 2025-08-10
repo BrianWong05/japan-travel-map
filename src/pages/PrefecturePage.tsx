@@ -54,13 +54,19 @@ export default function PrefecturePage() {
       // Find the region data to zoom to it
       const region = regions.find(r => r.id === currentPrefecture.regionId)
       if (region) {
-        const regionZoomEvent = new CustomEvent('zoomToRegion', {
-          detail: { region }
-        })
-        window.dispatchEvent(regionZoomEvent)
+        // Navigate using the region slug, not the ID
+        navigate(`/region/${region.slug}`)
+        
+        // Dispatch zoom event after navigation
+        setTimeout(() => {
+          const regionZoomEvent = new CustomEvent('zoomToRegion', {
+            detail: { region }
+          })
+          window.dispatchEvent(regionZoomEvent)
+        }, 100);
+      } else {
+        navigate('/')
       }
-      
-      navigate(`/region/${currentPrefecture.regionId}`)
     } else {
       navigate('/')
     }

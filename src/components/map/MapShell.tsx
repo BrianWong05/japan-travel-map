@@ -2,16 +2,26 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useAppStore } from "@/store";
-import type { Region } from '@/types'
+import { dataLoaders } from "@/lib/data";
+import type { Region, Prefecture } from '@/types'
 
 export default function MapShell() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { mapViewState, setMapViewState } = useAppStore();
   const [currentZoom, setCurrentZoom] = useState(mapViewState.zoom);
   const [hoveredPrefecture, setHoveredPrefecture] = useState<{ name: string; x: number; y: number } | null>(null);
+
+  // Get prefectures data to map codes to slugs for navigation
+  const { data: prefectures } = useQuery({
+    queryKey: ['prefectures'],
+    queryFn: dataLoaders.getPrefectures
+  });
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return; // Initialize map only once
@@ -423,49 +433,29 @@ export default function MapShell() {
         });
 
         map.current.on("click", "japan-prefectures-fill", (e) => {
+          // Prevent any default behavior that might cause page refresh
+          e.preventDefault?.();
+          e.stopPropagation?.();
+          
           if (e.features && e.features.length > 0 && map.current && map.current.getZoom() < 11) {
             const feature = e.features[0];
             const prefectureCode = feature.properties?.CODE;
-            const prefectureName = prefectureCode ? t(`prefectures.${prefectureCode}`) : "";
 
-            console.log("Clicked prefecture:", prefectureName, `(${feature.properties?.NAME})`);
+            console.log("Prefecture clicked!");
+            console.log("Prefecture code:", prefectureCode);
 
-            // Calculate the bounds of the clicked prefecture
-            if (feature.geometry) {
-              try {
-                // Get the bounds of the feature geometry
-                const bounds = new maplibregl.LngLatBounds();
-
-                const addCoordinatesToBounds = (coords: any) => {
-                  if (Array.isArray(coords[0])) {
-                    coords.forEach((coord: any) => addCoordinatesToBounds(coord));
-                  } else {
-                    bounds.extend([coords[0], coords[1]]);
-                  }
-                };
-
-                if (feature.geometry.type === "MultiPolygon") {
-                  feature.geometry.coordinates.forEach((polygon: any) => {
-                    polygon.forEach((ring: any) => {
-                      ring.forEach((coord: any) => bounds.extend([coord[0], coord[1]]));
-                    });
-                  });
-                } else if (feature.geometry.type === "Polygon") {
-                  feature.geometry.coordinates.forEach((ring: any) => {
-                    ring.forEach((coord: any) => bounds.extend([coord[0], coord[1]]));
-                  });
-                }
-
-                // Fit the map to the prefecture bounds with padding
-                map.current.fitBounds(bounds, {
-                  padding: 50,
-                  duration: 1000,
-                  maxZoom: 9,
-                });
-              } catch (error) {
-                console.error("Error calculating prefecture bounds:", error);
-              }
-            }
+            // Use a custom event to handle navigation to avoid refresh
+            const navigationEvent = new CustomEvent('navigateToPrefecture', {
+              detail: { prefectureCode }
+            });
+            window.dispatchEvent(navigationEvent);
+          } else {
+            console.log("Click conditions not met:", {
+              hasFeatures: !!(e.features && e.features.length > 0),
+              hasMap: !!map.current,
+              zoomLevel: map.current?.getZoom(),
+              zoomOk: map.current ? map.current.getZoom() < 11 : false
+            });
           }
         });
 
@@ -699,6 +689,54 @@ export default function MapShell() {
       }
     }
   }, [mapViewState]);
+
+  // Handle prefecture navigation events
+  useEffect(() => {
+    const handlePrefectureNavigation = (event: CustomEvent) => {
+      const { prefectureCode } = event.detail;
+      
+      if (prefectureCode && prefectures) {
+        console.log("Handling navigation for prefecture code:", prefectureCode);
+        console.log("Prefectures data available:", !!prefectures);
+        console.log("Prefectures count:", prefectures?.length);
+
+        // Find the prefecture data to get the slug for navigation
+        const prefecture = prefectures.find((p: Prefecture) => p.code === prefectureCode);
+        
+        console.log("Found prefecture:", prefecture);
+        
+        if (prefecture) {
+          console.log("Navigating to:", `/prefecture/${prefecture.slug}`);
+          
+          // Use requestAnimationFrame to ensure smooth navigation
+          requestAnimationFrame(() => {
+            try {
+              // Navigate to the prefecture page without refresh
+              navigate(`/prefecture/${prefecture.slug}`, { replace: false });
+              
+              // Dispatch zoom event after navigation
+              setTimeout(() => {
+                const prefectureZoomEvent = new CustomEvent('zoomToPrefecture', {
+                  detail: { prefecture }
+                });
+                window.dispatchEvent(prefectureZoomEvent);
+              }, 150);
+            } catch (error) {
+              console.error("Navigation error:", error);
+            }
+          });
+        } else {
+          console.log("Prefecture not found in data");
+        }
+      }
+    };
+
+    window.addEventListener('navigateToPrefecture', handlePrefectureNavigation as EventListener);
+
+    return () => {
+      window.removeEventListener('navigateToPrefecture', handlePrefectureNavigation as EventListener);
+    };
+  }, [prefectures, navigate]);
 
   return (
     <>
