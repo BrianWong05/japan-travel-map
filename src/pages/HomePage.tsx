@@ -11,9 +11,8 @@ export default function HomePage() {
   const { currentLanguage } = useAppStore()
 
   const handleRegionClick = (region: Region, e: React.MouseEvent) => {
-    e.preventDefault()
-    
-    // Dispatch a custom event that the map component can listen to
+    // Don't prevent default - let the Link navigation happen
+    // Just dispatch the zoom event for the map
     const regionZoomEvent = new CustomEvent('zoomToRegion', {
       detail: { region }
     })

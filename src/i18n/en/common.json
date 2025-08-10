@@ -57,6 +57,7 @@
     "error": "An error occurred",
     "retry": "Retry",
     "noResults": "No results found",
+    "noData": "No data available",
     "showMore": "Show more",
     "showLess": "Show less"
   },

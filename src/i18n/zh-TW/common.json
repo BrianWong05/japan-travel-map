@@ -57,6 +57,7 @@
     "error": "發生錯誤",
     "retry": "重試",
     "noResults": "找不到結果",
+    "noData": "無可用資料",
     "showMore": "顯示更多",
     "showLess": "顯示較少"
   },

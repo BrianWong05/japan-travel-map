@@ -412,12 +412,32 @@ export default function MapShell() {
       }
     }
 
-    // Add event listener for region zoom
+    // Listen for prefecture zoom events
+    const handlePrefectureZoom = (event: CustomEvent) => {
+      if (map.current && event.detail?.prefecture) {
+        const prefecture = event.detail.prefecture
+        
+        // Calculate center and zoom from bbox
+        const [minLng, minLat, maxLng, maxLat] = prefecture.bbox
+        
+        // Use fitBounds for more accurate framing
+        const bounds = new maplibregl.LngLatBounds([minLng, minLat], [maxLng, maxLat])
+        map.current.fitBounds(bounds, {
+          padding: 50,
+          duration: 1500,
+          maxZoom: 10
+        })
+      }
+    }
+
+    // Add event listeners for region and prefecture zoom
     window.addEventListener('zoomToRegion', handleRegionZoom as EventListener)
+    window.addEventListener('zoomToPrefecture', handlePrefectureZoom as EventListener)
 
     // Cleanup function
     return () => {
       window.removeEventListener('zoomToRegion', handleRegionZoom as EventListener)
+      window.removeEventListener('zoomToPrefecture', handlePrefectureZoom as EventListener)
       if (map.current) {
         map.current.remove()
         map.current = null
