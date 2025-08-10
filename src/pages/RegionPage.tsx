@@ -42,6 +42,26 @@ export default function RegionPage() {
     window.dispatchEvent(prefectureZoomEvent)
   }
 
+  const handlePrefectureHover = (prefecture: Prefecture | null) => {
+    // Dispatch hover event for the map
+    const prefectureHoverEvent = new CustomEvent('hoverPrefecture', {
+      detail: { prefecture }
+    })
+    window.dispatchEvent(prefectureHoverEvent)
+  }
+
+  const handleRegionHover = (isHovering: boolean) => {
+    // Highlight all prefectures in the region when hovering over the region
+    const regionHoverEvent = new CustomEvent('hoverRegion', {
+      detail: { 
+        region: currentRegion, 
+        prefectureCodes: regionPrefectures?.map(p => p.code) || [],
+        isHovering 
+      }
+    })
+    window.dispatchEvent(regionHoverEvent)
+  }
+
   const handleBackClick = () => {
     // Zoom back out to show all of Japan
     const zoomToJapanEvent = new CustomEvent('zoomToJapan', {
@@ -91,7 +111,9 @@ export default function RegionPage() {
               key={prefecture.id}
               to={`/prefecture/${prefecture.slug}`}
               onClick={(e) => handlePrefectureClick(prefecture, e)}
-              className="block p-3 rounded-md hover:bg-gray-50 border border-gray-200 transition-colors"
+              onMouseEnter={() => handlePrefectureHover(prefecture)}
+              onMouseLeave={() => handlePrefectureHover(null)}
+              className="block p-3 rounded-md hover:bg-blue-50 border border-gray-200 transition-colors hover:border-blue-300"
             >
               <div className="font-medium">
                 {i18nField(prefecture, 'name', currentLanguage)}

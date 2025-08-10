@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { dataLoaders } from '@/lib/data'
 import { i18nField } from '@/lib/i18n'
 import { useAppStore } from '@/store'
-import type { Region } from '@/types'
+import type { Region, Prefecture } from '@/types'
 
 export default function HomePage() {
   const { t } = useTranslation()
@@ -19,9 +19,45 @@ export default function HomePage() {
     window.dispatchEvent(regionZoomEvent)
   }
 
+  const handleRegionHover = (region: Region | null) => {
+    if (region && prefectures) {
+      // Get all prefecture codes for this region
+      const regionPrefectures = prefectures.filter((prefecture: Prefecture) => 
+        prefecture.regionId === region.id
+      )
+      const prefectureCodes = regionPrefectures.map(p => p.code)
+      
+      // Dispatch hover event for the map
+      const regionHoverEvent = new CustomEvent('hoverRegion', {
+        detail: { 
+          region, 
+          prefectureCodes,
+          isHovering: true 
+        }
+      })
+      window.dispatchEvent(regionHoverEvent)
+    } else {
+      // Clear hover
+      const regionHoverEvent = new CustomEvent('hoverRegion', {
+        detail: { 
+          region: null, 
+          prefectureCodes: [],
+          isHovering: false 
+        }
+      })
+      window.dispatchEvent(regionHoverEvent)
+    }
+  }
+
   const { data: regions, isLoading, error } = useQuery({
     queryKey: ['regions'],
     queryFn: dataLoaders.getRegions
+  })
+
+  // Get all prefectures to map regions to prefecture codes
+  const { data: prefectures } = useQuery({
+    queryKey: ['prefectures'],
+    queryFn: dataLoaders.getPrefectures
   })
 
   if (isLoading) {
@@ -49,7 +85,9 @@ export default function HomePage() {
             key={region.id}
             to={`/region/${region.slug}`}
             onClick={(e) => handleRegionClick(region, e)}
-            className="block p-3 rounded-md hover:bg-gray-50 border border-gray-200 transition-colors"
+            onMouseEnter={() => handleRegionHover(region)}
+            onMouseLeave={() => handleRegionHover(null)}
+            className="block p-3 rounded-md hover:bg-orange-50 border border-gray-200 transition-colors hover:border-orange-300"
           >
             <div className="font-medium">
               {i18nField(region, 'name', currentLanguage)}

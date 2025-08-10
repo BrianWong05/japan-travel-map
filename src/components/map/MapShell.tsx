@@ -90,10 +90,13 @@ export default function MapShell() {
           type: "geojson",
           data: japanData,
           generateId: true,
-          tolerance: 0.375,
-          buffer: 64,
+          tolerance: 0.1, // Reduced tolerance for better accuracy
+          buffer: 128, // Increased buffer to prevent clipping
           lineMetrics: false,
           promoteId: "CODE",
+          cluster: false, // Disable clustering
+          clusterMaxZoom: 14,
+          clusterRadius: 50
         });
 
         // Add Japan prefecture fill layer (ZOOM DEPENDENT)
@@ -134,15 +137,22 @@ export default function MapShell() {
               0.9, // high opacity at low zoom
               7,
               0.6, // medium opacity
+              9,
+              0.3, // reduced opacity at zoom 9
+              11,
+              0.1, // very low opacity at zoom 11
               12,
               0, // completely transparent at zoom 12
+              13,
+              0, // stay transparent at zoom 13
               14,
-              0, // stay transparent
+              0.1, // start reappearing when zooming back out
+              15,
+              0.2, // more visible
               16,
-              0, // stay transparent at high zoom
+              0.3, // visible at high zoom for context
             ],
           },
-          maxzoom: 16, // Don't render at very high zoom levels
         });
 
         // Add Japan prefecture outline layer (ZOOM DEPENDENT)
@@ -166,17 +176,24 @@ export default function MapShell() {
               0.9, // high opacity at low zoom
               7,
               0.6, // medium opacity
+              9,
+              0.4, // reduced opacity at zoom 9
               10,
-              0, // completely transparent at zoom 10
+              0.2, // low opacity at zoom 10
+              11,
+              0.1, // very low opacity at zoom 11
               12,
-              0, // stay transparent
+              0, // completely transparent at zoom 12
+              13,
+              0, // stay transparent at zoom 13
               14,
-              0, // stay transparent
+              0.2, // start reappearing when zooming back out
+              15,
+              0.4, // more visible
               16,
-              0, // stay transparent at high zoom
+              0.6, // visible at high zoom for context
             ],
           },
-          maxzoom: 16, // Don't render at very high zoom levels
         });
 
         // Create a mask to hide everything outside Japan
@@ -233,7 +250,7 @@ export default function MapShell() {
             "fill-color": "#b3d9ff",
             "fill-opacity": 0.0,
           },
-        }); // Insert above base map
+        }, "osm"); // Insert above base map but below prefecture layers
 
         // Add hover effect (ZOOM DEPENDENT)
         map.current.addLayer({
@@ -253,23 +270,108 @@ export default function MapShell() {
               0.4, // hover opacity at low zoom
               7,
               0.2, // medium hover opacity
+              9,
+              0.1, // reduced hover opacity at zoom 9
               10,
-              0, // no hover effect at zoom 10
+              0.05, // very low hover opacity at zoom 10
+              11,
+              0, // no hover effect at zoom 11+
               12,
               0, // stay transparent
-              14,
+              13,
               0, // stay transparent
+              14,
+              0.05, // subtle hover when zooming back out
+              15,
+              0.1, // more visible hover
               16,
-              0, // stay transparent at high zoom
+              0.2, // visible hover at high zoom
             ],
           },
           filter: ["==", "CODE", ""],
-          maxzoom: 14, // Don't render hover at very high zoom levels
+        });
+
+        // Add region highlight layer for sidebar hover
+        map.current.addLayer({
+          id: "japan-region-highlight",
+          type: "fill",
+          source: "japan-prefectures",
+          layout: {
+            visibility: "visible",
+          },
+          paint: {
+            "fill-color": "#ff9800", // Orange color for region highlight
+            "fill-opacity": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              4,
+              0.3, // region highlight opacity at low zoom
+              7,
+              0.2, // medium opacity
+              9,
+              0.1, // reduced opacity at zoom 9
+              10,
+              0.05, // very low opacity at zoom 10
+              11,
+              0, // no highlight at zoom 11+
+              12,
+              0, // stay transparent
+              13,
+              0, // stay transparent
+              14,
+              0.05, // subtle highlight when zooming back out
+              15,
+              0.1, // more visible highlight
+              16,
+              0.15, // visible highlight at high zoom
+            ],
+          },
+          filter: ["in", "CODE", ""], // Will be updated dynamically
+        });
+
+        // Add individual prefecture highlight layer for sidebar hover
+        map.current.addLayer({
+          id: "japan-prefecture-highlight",
+          type: "fill",
+          source: "japan-prefectures",
+          layout: {
+            visibility: "visible",
+          },
+          paint: {
+            "fill-color": "#2196f3", // Blue color for individual prefecture highlight
+            "fill-opacity": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              4,
+              0.5, // prefecture highlight opacity at low zoom
+              7,
+              0.3, // medium opacity
+              9,
+              0.2, // reduced opacity at zoom 9
+              10,
+              0.1, // low opacity at zoom 10
+              11,
+              0, // no highlight at zoom 11+
+              12,
+              0, // stay transparent
+              13,
+              0, // stay transparent
+              14,
+              0.1, // subtle highlight when zooming back out
+              15,
+              0.2, // more visible highlight
+              16,
+              0.3, // visible highlight at high zoom
+            ],
+          },
+          filter: ["==", "CODE", ""],
         });
 
         // Add click and hover interactions (ZOOM DEPENDENT)
         map.current.on("mouseenter", "japan-prefectures-fill", () => {
-          if (map.current && map.current.getZoom() < 10) {
+          if (map.current && map.current.getZoom() < 11) {
             map.current.getCanvas().style.cursor = "pointer";
           }
         });
@@ -277,19 +379,32 @@ export default function MapShell() {
         map.current.on("mouseleave", "japan-prefectures-fill", () => {
           if (map.current) {
             map.current.getCanvas().style.cursor = "";
-            map.current.setFilter("japan-prefectures-hover", ["==", "CODE", ""]);
+            // Use setTimeout to prevent rapid filter changes
+            setTimeout(() => {
+              if (map.current && map.current.getLayer("japan-prefectures-hover")) {
+                map.current.setFilter("japan-prefectures-hover", ["==", "CODE", ""]);
+              }
+            }, 50);
             setHoveredPrefecture(null);
           }
         });
 
+        let lastHoveredCode = "";
         map.current.on("mousemove", "japan-prefectures-fill", (e) => {
-          if (map.current && e.features && e.features.length > 0 && map.current.getZoom() < 10) {
+          if (map.current && e.features && e.features.length > 0 && map.current.getZoom() < 11) {
             const feature = e.features[0];
-            map.current.setFilter("japan-prefectures-hover", ["==", "CODE", feature.properties?.CODE]);
+            const currentCode = feature.properties?.CODE;
+            
+            // Only update filter if the hovered prefecture changed
+            if (currentCode && currentCode !== lastHoveredCode) {
+              lastHoveredCode = currentCode;
+              if (map.current.getLayer("japan-prefectures-hover")) {
+                map.current.setFilter("japan-prefectures-hover", ["==", "CODE", currentCode]);
+              }
+            }
 
             // Get prefecture name using i18n translations
-            const prefectureCode = feature.properties?.CODE;
-            const prefectureName = prefectureCode ? t(`prefectures.${prefectureCode}`) : "";
+            const prefectureName = currentCode ? t(`prefectures.${currentCode}`) : "";
 
             // Set tooltip position and content
             if (prefectureName && e.point) {
@@ -300,12 +415,15 @@ export default function MapShell() {
               });
             }
           } else {
-            setHoveredPrefecture(null);
+            if (lastHoveredCode) {
+              lastHoveredCode = "";
+              setHoveredPrefecture(null);
+            }
           }
         });
 
         map.current.on("click", "japan-prefectures-fill", (e) => {
-          if (e.features && e.features.length > 0 && map.current && map.current.getZoom() < 10) {
+          if (e.features && e.features.length > 0 && map.current && map.current.getZoom() < 11) {
             const feature = e.features[0];
             const prefectureCode = feature.properties?.CODE;
             const prefectureName = prefectureCode ? t(`prefectures.${prefectureCode}`) : "";
@@ -368,6 +486,25 @@ export default function MapShell() {
           longitude: center.lng,
           zoom: zoom,
         });
+        
+        // Only ensure layer visibility if needed (less aggressive)
+        if (map.current.getLayer("japan-prefectures-fill")) {
+          const fillVisibility = map.current.getLayoutProperty("japan-prefectures-fill", "visibility");
+          const outlineVisibility = map.current.getLayoutProperty("japan-prefectures-outline", "visibility");
+          
+          // Only update if visibility is actually wrong
+          if (fillVisibility !== "visible") {
+            map.current.setLayoutProperty("japan-prefectures-fill", "visibility", "visible");
+          }
+          if (outlineVisibility !== "visible") {
+            map.current.setLayoutProperty("japan-prefectures-outline", "visibility", "visible");
+          }
+          
+          // Only trigger repaint if we actually changed something
+          if (fillVisibility !== "visible" || outlineVisibility !== "visible") {
+            map.current.triggerRepaint();
+          }
+        }
       }
     });
 
@@ -376,6 +513,18 @@ export default function MapShell() {
       if (map.current) {
         const zoom = map.current.getZoom();
         setCurrentZoom(zoom);
+        
+        // Clear any stuck hover states when zooming
+        if (map.current.getLayer("japan-prefectures-hover")) {
+          map.current.setFilter("japan-prefectures-hover", ["==", "CODE", ""]);
+        }
+        if (map.current.getLayer("japan-region-highlight")) {
+          map.current.setFilter("japan-region-highlight", ["in", "CODE", ""]);
+        }
+        if (map.current.getLayer("japan-prefecture-highlight")) {
+          map.current.setFilter("japan-prefecture-highlight", ["==", "CODE", ""]);
+        }
+        setHoveredPrefecture(null);
       }
     });
 
@@ -460,11 +609,60 @@ export default function MapShell() {
       }
     }
 
+    // Listen for region hover events from sidebar
+    const handleRegionHover = (event: CustomEvent) => {
+      if (map.current && event.detail && map.current.getLayer("japan-region-highlight")) {
+        const { prefectureCodes, isHovering } = event.detail
+        
+        if (isHovering && prefectureCodes && prefectureCodes.length > 0) {
+          // Clear any existing hover states first
+          if (map.current.getLayer("japan-prefectures-hover")) {
+            map.current.setFilter("japan-prefectures-hover", ["==", "CODE", ""]);
+          }
+          if (map.current.getLayer("japan-prefecture-highlight")) {
+            map.current.setFilter("japan-prefecture-highlight", ["==", "CODE", ""]);
+          }
+          setHoveredPrefecture(null);
+          
+          // Highlight all prefectures in the region
+          map.current.setFilter("japan-region-highlight", ["in", "CODE", ...prefectureCodes]);
+        } else {
+          // Clear region highlight
+          map.current.setFilter("japan-region-highlight", ["in", "CODE", ""]);
+        }
+      }
+    }
+
+    // Listen for individual prefecture hover events from sidebar
+    const handlePrefectureHover = (event: CustomEvent) => {
+      if (map.current && event.detail && map.current.getLayer("japan-prefecture-highlight")) {
+        const { prefecture } = event.detail
+        
+        if (prefecture && prefecture.code) {
+          // Clear any existing map hover states first
+          if (map.current.getLayer("japan-prefectures-hover")) {
+            map.current.setFilter("japan-prefectures-hover", ["==", "CODE", ""]);
+          }
+          setHoveredPrefecture(null);
+          
+          // Highlight the specific prefecture
+          map.current.setFilter("japan-prefecture-highlight", ["==", "CODE", prefecture.code]);
+        } else {
+          // Clear prefecture highlight
+          map.current.setFilter("japan-prefecture-highlight", ["==", "CODE", ""]);
+        }
+      }
+    }
+
     // Add event listeners for region, prefecture, municipality, and Japan zoom
     window.addEventListener('zoomToRegion', handleRegionZoom as EventListener)
     window.addEventListener('zoomToPrefecture', handlePrefectureZoom as EventListener)
     window.addEventListener('zoomToMunicipality', handleMunicipalityZoom as EventListener)
     window.addEventListener('zoomToJapan', handleZoomToJapan as EventListener)
+    
+    // Add event listeners for hover effects
+    window.addEventListener('hoverRegion', handleRegionHover as EventListener)
+    window.addEventListener('hoverPrefecture', handlePrefectureHover as EventListener)
 
     // Cleanup function
     return () => {
@@ -472,6 +670,8 @@ export default function MapShell() {
       window.removeEventListener('zoomToPrefecture', handlePrefectureZoom as EventListener)
       window.removeEventListener('zoomToMunicipality', handleMunicipalityZoom as EventListener)
       window.removeEventListener('zoomToJapan', handleZoomToJapan as EventListener)
+      window.removeEventListener('hoverRegion', handleRegionHover as EventListener)
+      window.removeEventListener('hoverPrefecture', handlePrefectureHover as EventListener)
       if (map.current) {
         map.current.remove()
         map.current = null
