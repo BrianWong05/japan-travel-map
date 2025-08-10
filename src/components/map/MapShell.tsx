@@ -448,16 +448,30 @@ export default function MapShell() {
       }
     }
 
-    // Add event listeners for region, prefecture, and municipality zoom
+    // Listen for zoom to Japan events (back to overview)
+    const handleZoomToJapan = () => {
+      if (map.current) {
+        // Zoom back to the center of Japan (default initial position)
+        map.current.flyTo({
+          center: [138.2529, 36.2048], // Center of Japan
+          zoom: 5,
+          duration: 1500
+        })
+      }
+    }
+
+    // Add event listeners for region, prefecture, municipality, and Japan zoom
     window.addEventListener('zoomToRegion', handleRegionZoom as EventListener)
     window.addEventListener('zoomToPrefecture', handlePrefectureZoom as EventListener)
     window.addEventListener('zoomToMunicipality', handleMunicipalityZoom as EventListener)
+    window.addEventListener('zoomToJapan', handleZoomToJapan as EventListener)
 
     // Cleanup function
     return () => {
       window.removeEventListener('zoomToRegion', handleRegionZoom as EventListener)
       window.removeEventListener('zoomToPrefecture', handlePrefectureZoom as EventListener)
       window.removeEventListener('zoomToMunicipality', handleMunicipalityZoom as EventListener)
+      window.removeEventListener('zoomToJapan', handleZoomToJapan as EventListener)
       if (map.current) {
         map.current.remove()
         map.current = null

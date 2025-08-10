@@ -13,6 +13,12 @@ export default function PrefecturePage() {
   const navigate = useNavigate()
   const { currentLanguage } = useAppStore()
 
+  // Get all regions
+  const { data: regions } = useQuery({
+    queryKey: ['regions'],
+    queryFn: dataLoaders.getRegions
+  })
+
   // Get all prefectures to find the current one
   const { data: prefectures } = useQuery({
     queryKey: ['prefectures'],
@@ -43,8 +49,17 @@ export default function PrefecturePage() {
   }
 
   const handleBackClick = () => {
-    // Navigate back to the region page
-    if (currentPrefecture) {
+    // Navigate back to the region page and zoom to the region
+    if (currentPrefecture && regions) {
+      // Find the region data to zoom to it
+      const region = regions.find(r => r.id === currentPrefecture.regionId)
+      if (region) {
+        const regionZoomEvent = new CustomEvent('zoomToRegion', {
+          detail: { region }
+        })
+        window.dispatchEvent(regionZoomEvent)
+      }
+      
       navigate(`/region/${currentPrefecture.regionId}`)
     } else {
       navigate('/')

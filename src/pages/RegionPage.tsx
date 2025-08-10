@@ -43,6 +43,12 @@ export default function RegionPage() {
   }
 
   const handleBackClick = () => {
+    // Zoom back out to show all of Japan
+    const zoomToJapanEvent = new CustomEvent('zoomToJapan', {
+      detail: {}
+    })
+    window.dispatchEvent(zoomToJapanEvent)
+    
     navigate('/')
   }
 
